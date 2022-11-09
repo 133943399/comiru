@@ -21,4 +21,9 @@ class School extends Model
      * @var array
      */
     protected $hidden = [];
+
+    public function pass(){
+        $this->status = 1;
+        return $this;
+    }
 }
