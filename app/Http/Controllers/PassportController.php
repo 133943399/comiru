@@ -21,19 +21,19 @@ class PassportController extends Controller
     {
 
         $request->validate([
-            'username' => 'required|string|email',
-            'password' => 'required|string',
-            'remember_me' => 'boolean'
+            'username'    => 'required|string|email',
+            'password'    => 'required|string',
+            'remember_me' => 'boolean',
         ]);
 
         $user = User::where('email', $request->username)->firstOrFail();
-        if(!\Hash::check($request->password, $user->password)) {
+        if (!\Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'Unauthorized！'
+                'message' => 'Unauthorized！',
             ], 401);
         }
 
-        $tokenResult = $user->createToken('Personal Access Token');
+        $tokenResult = $user->createToken('web');
         $token = $tokenResult->token;
         if ($request->remember_me)
             $token->expires_at = Carbon::now()->addWeeks(1);
@@ -42,10 +42,10 @@ class PassportController extends Controller
 
         return response()->json([
             'access_token' => $tokenResult->accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => Carbon::parse(
+            'token_type'   => 'Bearer',
+            'expires_at'   => Carbon::parse(
                 $tokenResult->token->expires_at
-            )->toDateTimeString()
+            )->toDateTimeString(),
         ]);
 
     }
@@ -58,7 +58,7 @@ class PassportController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'     => 'required',
+            'name' => 'required',
             'email'    => 'required|email',
             'password' => 'required|confirmed',
         ]);
@@ -70,15 +70,24 @@ class PassportController extends Controller
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $input['type'] = 1;
+        $input['line_id'] = '';
 
         $user = User::create($input);
-        $success['token'] = $user->createToken('web')->accessToken;
-        $success['name'] = $user->name;
 
-        return response()->json(['success' => $success]);
+        \Log::info('user',$user->toArray());
+        $tokenResult = $user->createToken('web');
+
+        return response()->json([
+            'access_token' => $tokenResult->accessToken,
+            'token_type'   => 'Bearer',
+            'expires_at'   => Carbon::parse(
+                $tokenResult->token->expires_at
+            )->toDateTimeString(),
+        ]);
     }
 
-    public function logout(){
+    public function logout()
+    {
         return response()->json();
     }
 }

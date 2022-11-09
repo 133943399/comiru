@@ -27,4 +27,13 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * 获得与用户关联学校
+     */
+    public function school()
+    {
+        return $this->hasOne(School::class,'tid');
+    }
+
 }

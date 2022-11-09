@@ -12,21 +12,37 @@
 */
 
 Route::post('auth/login', 'PassportController@login');
-Route::post('register', 'PassportController@register');
+Route::post('auth/register', 'PassportController@register');
 
 Route::group(['middleware' => 'auth:web'], function () {
     //获取菜店
     Route::get('menu/getList', 'PermissionController@index');
 
-    Route::get('student', 'StudentController@list');
-    Route::get('teacher', 'TeacherController@list');
+    //学生
+    Route::group(['prefix' => 'student'], function () {
+        Route::get('/', 'StudentController@list');
+        Route::post('/{id}/follow', 'StudentController@follow');
+    });
+
+    //教师
+    Route::group(['prefix' => 'teacher'], function () {
+        Route::get('/', 'TeacherController@list');
+        Route::get('/followme', 'TeacherController@followme');
+        Route::post('/invent', 'TeacherController@invent');
+    });
+
+    //学校
+    Route::group(['prefix' => 'school'], function () {
+        Route::get('/', 'SchoolController@list');
+        Route::post('/', 'SchoolController@create');
+        Route::put('/invite/{id}', 'SchoolController@invite');
+        Route::put('/student/{id}', 'SchoolController@student');
+    });
 
     Route::post('push/message', 'PushController@message');
 
     //退出登录
     Route::post('auth/logout', 'PassportController@logout');
-
-//    Route::get('followme', 'PermissionController@index');
 });
 
 Route::get('/line', 'LoginController@pageLine');
