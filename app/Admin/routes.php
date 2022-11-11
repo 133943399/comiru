@@ -1,7 +1,5 @@
 <?php
 
-use App\Admin\Controllers\SchoolController;
-use Encore\Admin\Admin;
 use Illuminate\Routing\Router;
 
 Admin::routes();

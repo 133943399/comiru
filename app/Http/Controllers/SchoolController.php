@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Follow;
 use App\Models\School;
 use App\Models\SchoolStudent;
 use App\Models\SchoolTeacher;
@@ -17,7 +16,9 @@ class SchoolController extends Controller
         $page = request()->input('page', 1);
         $perPage = request()->input('perPage', 20);
 
-        $school = School::paginate($perPage, ['*'], 'page', $page);
+        $tid = \Auth::user()->id;
+        $sids = SchoolTeacher::select('sid','type')->where(['tid' => $tid])->get()->toArray();
+        $school = School::whereIn('id',array_column($sids,'sid'))->with(['schoolTeacher','teacher'])->paginate($perPage, ['*'], 'page', $page);
         $data = $school->toArray();
         return response()->json([
             'code'       => 200,
@@ -58,6 +59,7 @@ class SchoolController extends Controller
             $stc = new SchoolTeacher;
             $stc->sid = $school->id;
             $stc->tid = $tid;
+            $stc->type = 1;
             $stc->save();
         }
 
@@ -83,6 +85,7 @@ class SchoolController extends Controller
                 $stc = new SchoolTeacher;
                 $stc->sid = $id;
                 $stc->tid = $teacher->id;
+                $stc->type = 0;
                 $stc->save();
             }
             $messag = '邀请成功';

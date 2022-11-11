@@ -16,6 +16,7 @@ class CreateSchoolTeachersTable extends Migration
         Schema::create('school_teachers', function (Blueprint $table) {
             $table->bigInteger('sid');
             $table->bigInteger('tid');
+            $table->tinyInteger('type');
             $table->unique(['sid', 'tid']);
         });
     }

@@ -26,4 +26,12 @@ class School extends Model
         $this->status = 1;
         return $this;
     }
+
+    public function schoolTeacher(){
+        return $this->hasOne(SchoolTeacher::class,'sid');
+    }
+
+    public function teacher(){
+        return $this->hasOne(User::class,'id','tid');
+    }
 }
