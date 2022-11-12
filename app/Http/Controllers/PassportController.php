@@ -105,6 +105,7 @@ class PassportController extends Controller
     public function handleProviderCallback()
     {
         $user = Socialite::driver('line')->user();
+        dd($user);
         return response()->json([
             'access_token' => $user->token,
             'token_type'   => 'Bearer',
