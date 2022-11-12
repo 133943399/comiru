@@ -108,9 +108,6 @@ class PassportController extends Controller
         return response()->json([
             'access_token' => $user->token,
             'token_type'   => 'Bearer',
-            'expires_at'   => Carbon::parse(
-                $user->expiresIn
-            )->toDateTimeString(),
         ]);
     }
 }
