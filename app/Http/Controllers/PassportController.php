@@ -105,13 +105,12 @@ class PassportController extends Controller
     public function handleProviderCallback()
     {
         $user = Socialite::driver('line')->user();
-        dd($user->token->expires_at);
-//        return response()->json([
-//            'access_token' => $user->token,
-//            'token_type'   => 'Bearer',
-//            'expires_at'   => Carbon::parse(
-//                $user->token->expires_at
-//            )->toDateTimeString(),
-//        ]);
+        return response()->json([
+            'access_token' => $user->token,
+            'token_type'   => 'Bearer',
+            'expires_at'   => Carbon::parse(
+                $user->expiresIn
+            )->toDateTimeString(),
+        ]);
     }
 }
