@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
 use Validator;
 
 class PassportController extends Controller
@@ -89,5 +89,22 @@ class PassportController extends Controller
     public function logout()
     {
         return response()->json();
+    }
+
+    /**
+     * 将用户重定向到line认证页面
+     */
+    public function redirectToProvider()
+    {
+        return Socialite::driver('line')->redirect();
+    }
+
+    /**
+     * 从line获取用户信息.
+     */
+    public function handleProviderCallback()
+    {
+        $user = Socialite::driver('line')->user();
+        dd($user->token);
     }
 }

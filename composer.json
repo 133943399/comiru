@@ -15,7 +15,8 @@
         "laravel/tinker": "~1.0",
         "lcobucci/jwt": "3.3.3",
         "paragonie/random_compat": "~2.0",
-        "pusher/pusher-php-server": "^3.0"
+        "pusher/pusher-php-server": "^3.0",
+        "socialiteproviders/line": "^2.1"
     },
     "require-dev": {
         "filp/whoops": "~2.0",

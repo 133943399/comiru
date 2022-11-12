@@ -178,6 +178,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         Laravel\Passport\PassportServiceProvider::class,
+        \SocialiteProviders\Manager\ServiceProvider::class, // 三方登录
     ],
 
     /*
