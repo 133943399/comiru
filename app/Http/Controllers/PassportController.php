@@ -104,11 +104,28 @@ class PassportController extends Controller
      */
     public function handleProviderCallback()
     {
-        $user = Socialite::driver('line')->user();
-        dd($user);
+        $auth_user = Socialite::driver('line')->user();
+
+        $user = User::where(['line_id' => $auth_user->id])->first();
+        if (empty($user)){
+            $user = User::create([
+               'email'=> $auth_user->email ?? 'demo@comiru.com',
+               'name'=> $auth_user->name,
+               'password'=> bcrypt($auth_user->name),
+               'line_id'=> $auth_user->id,
+            ]);
+        }
+
+        $tokenResult = $user->createToken('web');
+//        $token = $tokenResult->token;
+//        $token->save();
+
         return response()->json([
-            'access_token' => $user->token,
+            'access_token' => $tokenResult->accessToken,
             'token_type'   => 'Bearer',
+            'expires_at'   => Carbon::parse(
+                $tokenResult->token->expires_at
+            )->toDateTimeString(),
         ]);
     }
 }
