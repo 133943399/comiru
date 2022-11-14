@@ -11,12 +11,17 @@
 |
 */
 
+Route::get('auth/login', 'PassportController@index');
 Route::post('auth/login', 'PassportController@login');
 Route::post('auth/register', 'PassportController@register');
 
 Route::group(['middleware' => 'auth:web'], function () {
+
+    Route::get('/users/getUserInfo', 'UserController@info');
+
+
     //获取菜店
-    Route::get('menu/getList', 'PermissionController@index');
+    Route::get('/menu/getList', 'PermissionController@index');
 
     //学生
     Route::group(['prefix' => 'student'], function () {
@@ -39,10 +44,10 @@ Route::group(['middleware' => 'auth:web'], function () {
         Route::put('/student/{id}', 'SchoolController@student');
     });
 
-    Route::post('push/message', 'PushController@message');
+    Route::post('/push/message/', 'PushController@message');
 
     //退出登录
-    Route::post('auth/logout', 'PassportController@logout');
+    Route::post('/auth/logout', 'PassportController@logout');
 });
 
 Route::get('login/line', 'PassportController@redirectToProvider');

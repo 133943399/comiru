@@ -11,21 +11,25 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class Message
+class MessageEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $user;
-    public $msg;
+    public $user_id;
+    public $text;
+    public $date;
+    public $name;
 
-    public function __construct(User $user,$message)
+    public function __construct($user_id,$msg = '')
     {
-        $this->user = $user;
-        $this->msg = $message;
+        $this->user_id = $user_id;
+        $this->text = ['text' => $msg];
+        $this->date = date('Y-m-d H:i:m');
+        $this->name = \Auth::user()->name;
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('test');
+        return new Channel("user_".$this->user_id);
     }
 }

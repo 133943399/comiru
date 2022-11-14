@@ -11,6 +11,10 @@ use Validator;
 
 class PassportController extends Controller
 {
+    public function index()
+    {
+        return view('login');
+    }
 
     /**
      * login api
@@ -58,7 +62,7 @@ class PassportController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name'     => 'required',
             'email'    => 'required|email',
             'password' => 'required|confirmed',
         ]);
@@ -74,7 +78,7 @@ class PassportController extends Controller
 
         $user = User::create($input);
 
-        \Log::info('user',$user->toArray());
+        \Log::info('user', $user->toArray());
         $tokenResult = $user->createToken('web');
 
         return response()->json([
@@ -107,12 +111,12 @@ class PassportController extends Controller
         $auth_user = Socialite::driver('line')->user();
 
         $user = User::where(['line_id' => $auth_user->id])->first();
-        if (empty($user)){
+        if (empty($user)) {
             $user = User::create([
-               'email'=> $auth_user->email ?? 'demo@comiru.com',
-               'name'=> $auth_user->name,
-               'password'=> bcrypt($auth_user->name),
-               'line_id'=> $auth_user->id,
+                'email'    => $auth_user->email ?? 'demo@comiru.com',
+                'name'     => $auth_user->name,
+                'password' => bcrypt($auth_user->name),
+                'line_id'  => $auth_user->id,
             ]);
         }
 
@@ -120,12 +124,8 @@ class PassportController extends Controller
 //        $token = $tokenResult->token;
 //        $token->save();
 
-        return response()->json([
-            'access_token' => $tokenResult->accessToken,
-            'token_type'   => 'Bearer',
-            'expires_at'   => Carbon::parse(
-                $tokenResult->token->expires_at
-            )->toDateTimeString(),
+        return redirect('localhost:8080')->withHeaders([
+            'Authorization' => 'Bearer ' . $tokenResult->accessToken,
         ]);
     }
 }

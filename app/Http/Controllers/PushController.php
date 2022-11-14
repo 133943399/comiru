@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageEvent;
 use Illuminate\Http\Request;
 
 class PushController extends Controller
@@ -9,21 +10,11 @@ class PushController extends Controller
     //
     public function message(Request $request)
     {
-        $pusher = new \Pusher\Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            ['cluster' => env('PUSHER_APP_CLUSTER'),]
-        );
-
-        $a = $pusher->trigger(
-            'test-channel',
-            'test-event',
-            ['text' => $request->msg]
-        );
-
+        $msg = $request->msg;
+        $user_id = $request->user_id;
+        event(new MessageEvent($user_id,$msg));
         return response()->json([
-            'status' => $a,
+            'status' => $msg,
         ]);
     }
 
