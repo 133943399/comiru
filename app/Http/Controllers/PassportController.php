@@ -133,6 +133,6 @@ class PassportController extends Controller
             'expires_at'   => Carbon::parse(
                 $tokenResult->token->expires_at
             )->toDateTimeString(),
-        ])."对前端不熟...没研究明怎么跳回前端";
+        ]);
     }
 }
