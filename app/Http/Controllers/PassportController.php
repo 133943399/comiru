@@ -100,7 +100,10 @@ class PassportController extends Controller
      */
     public function redirectToProvider()
     {
-        return Socialite::driver('line')->redirect();
+        $oauth_url = Socialite::driver('line')->redirect()->getTargetUrl();
+        return response()->json([
+            'url' => $oauth_url,
+        ]);
     }
 
     /**
@@ -121,11 +124,16 @@ class PassportController extends Controller
         }
 
         $tokenResult = $user->createToken('web');
-//        $token = $tokenResult->token;
-//        $token->save();
+        $token = $tokenResult->token;
+        $token->save();
 
-        return redirect('localhost:8080')->withHeaders([
-            'Authorization' => 'Bearer ' . $tokenResult->accessToken,
+        return response()->json([
+            'access_token' => $tokenResult->accessToken,
+            'token_type'   => 'Bearer',
+            'expires_at'   => Carbon::parse(
+                $tokenResult->token->expires_at
+            )->toDateTimeString(),
+            'msg' => '对前端不熟...没研究明怎么跳回前端',
         ]);
     }
 }
