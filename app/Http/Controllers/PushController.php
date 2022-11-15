@@ -31,7 +31,6 @@ class PushController extends Controller
             'text'    => $msg,
             'mine'    => false,
             'name'    => \Auth::user()->name,
-            'user_id' => \Auth::user()->toArray(),
         ]);
 
         return response()->json([
