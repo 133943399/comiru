@@ -30,7 +30,7 @@ class MessageEvent implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new Channel("user". $this->user_id);
+        return new Channel("user_". $this->user_id);
     }
 
     public function broadcastAs()
