@@ -50,5 +50,5 @@ Route::group(['middleware' => 'auth:web'], function () {
     Route::post('/auth/logout', 'PassportController@logout');
 });
 
-Route::get('login/line', 'PassportController@redirectToProvider');
-Route::get('login/line/callback', 'PassportController@handleProviderCallback');
+Route::get('login/line', 'PassportController@getLineUrl');
+Route::get('login/line/callback', 'PassportController@lineCallBack');

@@ -98,7 +98,7 @@ class PassportController extends Controller
     /**
      * 将用户重定向到line认证页面
      */
-    public function redirectToProvider()
+    public function getLineUrl()
     {
         $oauth_url = Socialite::driver('line')->redirect()->getTargetUrl();
         return response()->json([
@@ -109,7 +109,7 @@ class PassportController extends Controller
     /**
      * 从line获取用户信息.
      */
-    public function handleProviderCallback()
+    public function lineCallBack()
     {
         $auth_user = Socialite::driver('line')->user();
 
