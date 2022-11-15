@@ -37,7 +37,7 @@ class PushController extends Controller
                 'user_id' => \Auth::user()->toArray(),
             ]);
         }catch (\Exception $e){
-            \Log::error($e->getMessage());
+            $a = $e->getMessage();
         }
         return response()->json([
             'status' => $a,
