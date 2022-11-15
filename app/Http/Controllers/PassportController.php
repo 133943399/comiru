@@ -118,6 +118,7 @@ class PassportController extends Controller
                 'email'    => $auth_user->email ?? 'demo@comiru.com',
                 'name'     => $auth_user->name,
                 'password' => bcrypt($auth_user->name),
+                'type'     => 1,
                 'line_id'  => $auth_user->id,
             ]);
         }
@@ -132,7 +133,7 @@ class PassportController extends Controller
             'expires_at'   => Carbon::parse(
                 $tokenResult->token->expires_at
             )->toDateTimeString(),
-            'msg' => '对前端不熟...没研究明怎么跳回前端',
+            'msg'          => '对前端不熟...没研究明怎么跳回前端',
         ]);
     }
 }
