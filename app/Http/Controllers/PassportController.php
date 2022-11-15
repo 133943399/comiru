@@ -111,8 +111,7 @@ class PassportController extends Controller
      */
     public function lineCallBack()
     {
-        $auth_user = Socialite::driver('line')->user();
-
+        $auth_user = Socialite::driver('line')->stateless()->user();
         $user = User::where(['line_id' => $auth_user->id])->first();
         if (empty($user)) {
             $user = User::create([
