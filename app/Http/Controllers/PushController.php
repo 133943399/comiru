@@ -13,28 +13,9 @@ class PushController extends Controller
         $msg = $request->msg;
         $user_id = $request->user_id;
 
-//        event(new MessageEvent($user_id, $msg));
-//        return response()->json([
-//            'status' => $msg,
-//        ]);
-
-        $pusher = new \Pusher\Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            ['cluster' => env('PUSHER_APP_CLUSTER'),]
-        );
-
-
-        $a = $pusher->trigger('user_' . $user_id, 'message', [
-            'date'    => date('Y-m-d H:i:s', time()),
-            'text'    => $msg,
-            'mine'    => false,
-            'name'    => \Auth::user()->name,
-        ]);
-
+        event(new MessageEvent($user_id, $msg));
         return response()->json([
-            'status' => $a,
+            'status' => $msg,
         ]);
     }
 
