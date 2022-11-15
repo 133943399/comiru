@@ -21,13 +21,19 @@ class TeacherController extends Controller
             return response()->json([
                 'code'       => 200,
                 'data'       => ['list' => []],
-                'pagination' => [
-                ],
             ]);
         }
         $teacher_ids = SchoolTeacher::select("tid")->where(['sid'=>$school->sid])->get()->toArray();
         $teacher_ids = array_column($teacher_ids,'tid');
         $teachers = User::whereIn('id', $teacher_ids)->paginate($perPage, ['*'], 'page', $page);
+        $fList = array_column(Follow::where(['sid' => $id])->get()->toArray(),'tid');
+        foreach ($teachers as $k => $teacher){
+            $teachers[$k]['follow'] = 0;
+            if (in_array($teacher['id'],$fList)){
+                $teachers[$k]['follow'] = 1;
+            }
+        }
+
 
         $data = $teachers->toArray();
         return response()->json([
