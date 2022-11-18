@@ -14,5 +14,6 @@ Route::group([
     $router->get('/', 'HomeController@index')->name('home');
 
     $router->resource('schools', SchoolController::class);
+    $router->resource('notices', NoticeController::class);
 
 });

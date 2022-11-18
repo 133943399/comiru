@@ -12,7 +12,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Support\Facades\Auth;
 
-class MessageEvent implements ShouldBroadcast
+class NoticeEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -21,24 +21,16 @@ class MessageEvent implements ShouldBroadcast
     public $date;
     public $name;
 
-    public function __construct($user_id, $msg = '')
+    public function __construct($msg = '')
     {
-        $this->user_id = $user_id;
+        $this->user_id = 0;
         $this->text = ['text' => $msg];
         $this->date = date('Y-m-d H:i:m');
-        $this->name = \Auth::user()->name;
+        $this->name = '公告通知';
     }
 
     public function broadcastOn()
     {
-        return new Channel("message");
-    }
-
-    public function broadcastAs()
-    {
-        $to = $this->user_id;
-        $from = Auth::id();
-        $arr = [$from , $to];
-        return implode($arr,'-');
+        return new Channel("notice");
     }
 }

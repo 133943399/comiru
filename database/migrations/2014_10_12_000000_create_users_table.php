@@ -18,6 +18,8 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
+            $table->tinyInteger('type')->common("1:教师,2:学生");
+            $table->string('line_id');
             $table->rememberToken();
             $table->timestamps();
         });

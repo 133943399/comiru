@@ -11,44 +11,42 @@
 |
 */
 
-Route::get('auth/login', 'PassportController@index');
 Route::post('auth/login', 'PassportController@login');
 Route::post('auth/register', 'PassportController@register');
+Route::get('login/line', 'PassportController@getLineUrl');
+Route::get('login/line/callback', 'PassportController@lineCallBack');
+Route::get('/line/send', 'LineController@testSend');
 
 Route::group(['middleware' => 'auth:web'], function () {
+    Route::get('/users/getUserInfo', 'UserController@info');//登录用户信息
+    Route::get('/menu/getList', 'PermissionController@index');//获取菜店
 
-    Route::get('/users/getUserInfo', 'UserController@info');
 
+    Route::group(['prefix' => 'user'], function () {
+        //学生
+        Route::get('/students', 'UserController@getStudents');
+        Route::post('/students/{id}/follow', 'UserController@follow');
 
-    //获取菜店
-    Route::get('/menu/getList', 'PermissionController@index');
-
-    //学生
-    Route::group(['prefix' => 'student'], function () {
-        Route::get('/', 'StudentController@list');
-        Route::post('/{id}/follow', 'StudentController@follow');
-    });
-
-    //教师
-    Route::group(['prefix' => 'teacher'], function () {
-        Route::get('/', 'TeacherController@list');
-        Route::get('/followme', 'TeacherController@followme');
-        Route::post('/invent', 'TeacherController@invent');
+        //教师
+        Route::get('/teachers', 'UserController@getTeachers');
+        Route::get('/teachers/follow', 'UserController@followList');
+        Route::post('/teachers/invent', 'UserController@invent');
     });
 
     //学校
     Route::group(['prefix' => 'school'], function () {
         Route::get('/', 'SchoolController@list');
         Route::post('/', 'SchoolController@create');
-        Route::put('/invite/{id}', 'SchoolController@invite');
-        Route::put('/student/{id}', 'SchoolController@student');
+        Route::post('/invite/{id}', 'SchoolController@invite');
+        Route::post('/student/{id}', 'SchoolController@student');
     });
 
+    //聊天
     Route::post('/push/message/', 'PushController@message');
+    //公告
+    Route::post('/push/notice/', 'PushController@notice');
 
     //退出登录
     Route::post('/auth/logout', 'PassportController@logout');
 });
 
-Route::get('login/line', 'PassportController@getLineUrl');
-Route::get('login/line/callback', 'PassportController@lineCallBack');

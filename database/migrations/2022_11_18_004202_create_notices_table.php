@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSchoolStudentsTable extends Migration
+class CreateNoticesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateSchoolStudentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('school_students', function (Blueprint $table) {
-            $table->bigInteger('sid');
-            $table->bigInteger('stid');
-            $table->unique(['stid', 'sid']);
+        Schema::create('notices', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('content');
+            $table->string('type');//1 站内通知 2 line公众号推送
+            $table->timestamps();
         });
     }
 
@@ -27,6 +28,6 @@ class CreateSchoolStudentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('school_students');
+        Schema::dropIfExists('notices');
     }
 }

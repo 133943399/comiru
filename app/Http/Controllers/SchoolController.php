@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InviteTeacher;
 use App\Models\School;
-use App\Models\SchoolStudent;
+use App\Models\SchoolUser;
 use App\Models\SchoolTeacher;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -13,103 +14,106 @@ class SchoolController extends Controller
 {
     public function list()
     {
-        $page = request()->input('page', 1);
-        $perPage = request()->input('perPage', 20);
-
-        $tid = \Auth::user()->id;
-        $sids = SchoolTeacher::select('sid','type')->where(['tid' => $tid])->get()->toArray();
-        $school = School::whereIn('id',array_column($sids,'sid'))->with(['schoolTeacher','teacher'])->paginate($perPage, ['*'], 'page', $page);
-        $data = $school->toArray();
-        return response()->json([
-            'code'       => 200,
-            'data'       => ['list' => $data['data']],
-            'pagination' => [
-                'count'       => $data['total'],
-                'currentPage' => $data['current_page'],
-                'perPage'     => $data["per_page"],
-                'total'       => $data['total'],
-                'totalPages'  => $data['last_page'],
-            ],
+        $uid = \Auth::user()->id;
+        $school = SchoolUser::data([
+            ['uid', '=', $uid],
         ]);
+        $this->setData($school);
+        return $this->responseJSON();
     }
 
     public function create(Request $request)
     {
-        $tid = \Auth::user()->id;
+        $uid = \Auth::user()->id;
 
         $school = new School();
-        $school->tid = $tid;
+        $school->uid = $uid;
         $school->name = $request->name;
 
         if ($school->save()) {
             $code = 200;
-            $messag = '操作成功';
+            $message = '操作成功';
+            $this->setMsg($code, $message);
+
         } else {
             $code = 400;
-            $messag = '操作失败';
+            $message = '操作失败';
+            $this->setMsg($code, $message);
         }
 
+        $stc = new SchoolUser;
+        $stc->sid = $school->id;
+        $stc->uid = $uid;
+        $stc->type = 1;
+        $stc->save();
 
-        $st = SchoolTeacher::where([
-            'sid' => $school->id,
-            'tid' => $tid,
-        ])->first();
-
-        if (empty($st)) {
-            $stc = new SchoolTeacher;
-            $stc->sid = $school->id;
-            $stc->tid = $tid;
-            $stc->type = 1;
-            $stc->save();
-        }
-
-        return response()->json([
-            'code' => $code,
-            'data' => ['message' => $messag],
-        ]);
+        return $this->responseJSON();
     }
 
     public function invite(Request $request, $id)
     {
-        $teacher = User::where([
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            $this->setMsg(400, $validator->messages()->first());
+            return $this->responseJSON();
+        }
+
+        $user = User::where([
             'email' => $request->email,
-            'type'  => 1,
         ])->first();
-        if (!empty($teacher)) {
+
+        $teacher = SchoolUser::where([
+            'sid' => $id,
+            'uid' => $user->id,
+        ])->first();
+
+        if (empty($teacher)) {
+            $school = School::find($id);
+            \Mail::send(new InviteTeacher($school, $request->email));
+
             $st = SchoolTeacher::where([
                 'sid' => $id,
                 'tid' => $teacher->id,
             ])->first();
 
             if (empty($st)) {
-                $stc = new SchoolTeacher;
+                $stc = new SchoolUser();
                 $stc->sid = $id;
-                $stc->tid = $teacher->id;
-                $stc->type = 0;
+                $stc->uid = $teacher->id;
+                $stc->type = 2;//0学生,1管理员,2普通老师
                 $stc->save();
             }
-            $messag = '邀请成功';
+            $messag = '邀请已发送';
         } else {
-            $messag = '教师不存在';
+            $messag = '该邮箱已被邀请';
         }
 
-        return response()->json([
-            'code' => 200,
-            'data' => ['message' => $messag],
-        ]);
+        $this->setMsg(200, $messag);
+        return $this->responseJSON();
     }
 
     public function student(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             's_name'   => 'required',
-            's_email'  => 'required|email',
+            's_email'  => 'required|email|unique:users,email',
             'password' => 'required',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);
+            $this->setMsg(400, $validator->messages()->first());
+            return $this->responseJSON();
         }
+
+        $v = User::where('email', $request->s_email)->first();
+        if (!empty($v)) {
+            $this->setMsg(400, '邮箱以被注册');
+            return $this->responseJSON();
+        }
+
 
         $input = $request->all();
         $input['name'] = $input['s_name'];
@@ -120,12 +124,12 @@ class SchoolController extends Controller
 
         $user = User::create($input);
 
-        $s_st = new SchoolStudent();
+        $s_st = new SchoolUser();
         $s_st->sid = $id;
-        $s_st->stid = $user->id;
+        $s_st->uid = $user->id;
         $s_st->save();
 
-        return response()->json();
+        return $this->responseJSON();
     }
 
 }

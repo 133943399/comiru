@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSchoolTeachersTable extends Migration
+class CreateSchoolUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateSchoolTeachersTable extends Migration
      */
     public function up()
     {
-        Schema::create('school_teachers', function (Blueprint $table) {
+        Schema::create('school_users', function (Blueprint $table) {
             $table->bigInteger('sid');
-            $table->bigInteger('tid');
-            $table->tinyInteger('type');
-            $table->unique(['sid', 'tid']);
+            $table->bigInteger('uid');
+            $table->tinyInteger('type')->default(0)->common('0:普通学生,1:管理员,2:普通教师');
+            $table->unique(['sid', 'uid']);
         });
     }
 
@@ -28,6 +28,6 @@ class CreateSchoolTeachersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('school_teachers');
+        Schema::dropIfExists('school_users');
     }
 }
