@@ -130,7 +130,7 @@ class PassportController extends Controller
     {
         $auth_user = Auth::user();
         $line_user = Socialite::driver('line')->stateless()->user();
-        $this->setData($line_user);
+        $this->setData(['id'=>$line_user->id]);
         return $this->responseJSON();
 
         if (!empty($auth_user)) {
