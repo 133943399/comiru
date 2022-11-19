@@ -14,11 +14,6 @@ use Validator;
 
 class PassportController extends Controller
 {
-    public function index()
-    {
-        return view('login');
-    }
-
     /**
      * login api
      *
@@ -141,6 +136,8 @@ class PassportController extends Controller
             }
             //绑定逻辑
             $user = User::where(['line_id' => $line_user->id, 'type' => 1])->first();
+            $this->setData($user);
+            return $this->responseJSON();
             $user = User::find($user->id);
             $user->line_id = $line_user->id;
             $user->save();
