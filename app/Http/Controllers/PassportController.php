@@ -14,6 +14,11 @@ use Validator;
 
 class PassportController extends Controller
 {
+    public function index()
+    {
+        return view('login');
+    }
+
     /**
      * login api
      *
@@ -125,8 +130,12 @@ class PassportController extends Controller
     {
         $auth_user = Auth::user();
         $line_user = Socialite::driver('line')->stateless()->user();
-
         if (!empty($auth_user)) {
+            if (!empty($auth_user->line_id)) {
+                $this->setMsg(400, '已经绑定Line用户');
+                return $this->responseJSON();
+            }
+
             if ($auth_user->type != 2) {
                 $user = User::where(['line_id' => $line_user->id, 'type' => 1])->first();
                 if (!empty($user)) {
@@ -134,11 +143,9 @@ class PassportController extends Controller
                     return $this->responseJSON();
                 }
             }
+
             //绑定逻辑
-            $user = User::where(['line_id' => $line_user->id, 'type' => 1])->first();
-            $this->setData($user);
-            return $this->responseJSON();
-            $user = User::find($user->id);
+            $user = User::find($auth_user->id);
             $user->line_id = $line_user->id;
             $user->save();
 
@@ -148,7 +155,6 @@ class PassportController extends Controller
             //登录逻辑
             $user = User::where([
                 ['line_id', '=', $line_user->id],
-                ['type', '<>', '2'],
             ])->first();
 
             if (empty($user)) {
@@ -185,14 +191,14 @@ class PassportController extends Controller
         $users = User::where(['line_id' => $lineId])->paginate($perPage, ['*'], 'page', $page);
 
         $data = [
-            'list' => $users->items(),
+            'list'       => $users->items(),
             'pagination' => [
                 'total'       => $users->total(),
                 'count'       => $users->count(),
                 'perPage'     => $users->perPage(),
                 'currentPage' => $users->currentPage(),
                 'totalPages'  => $users->lastPage(),
-            ]
+            ],
         ];
         $this->setData($data);
         return $this->responseJSON();
