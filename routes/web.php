@@ -14,15 +14,18 @@
 Route::post('auth/login', 'PassportController@login');
 Route::post('auth/register', 'PassportController@register');
 Route::get('login/line', 'PassportController@getLineUrl');
-Route::get('login/line/callback', 'PassportController@lineCallBack');
-Route::get('/line/send', 'LineController@testSend');
+Route::get('line/callback', 'PassportController@lineCallBack');
 
 Route::group(['middleware' => 'auth:web'], function () {
     Route::get('/users/getUserInfo', 'UserController@info');//登录用户信息
     Route::get('/menu/getList', 'PermissionController@index');//获取菜店
+    Route::get('/bindline', 'PassportController@bindLine');//绑定line账号
 
 
     Route::group(['prefix' => 'user'], function () {
+        Route::get('/change_list', 'PassportController@getUserRole');
+        Route::post('/change', 'PassportController@setUserRole');
+
         //学生
         Route::get('/students', 'UserController@getStudents');
         Route::post('/students/{id}/follow', 'UserController@follow');

@@ -63,6 +63,16 @@ class SchoolController extends Controller
 
         $user = User::where([
             'email' => $request->email,
+            'type'  => 1,
+        ])->first();
+        if (!empty($user)) {
+            $this->setMsg(400, '无法邀请管理员用户');
+            return $this->responseJSON();
+        }
+
+        $user = User::where([
+            ['email', '=', $request->email],
+            ['type', '<>', 1],
         ])->first();
 
         $teacher = SchoolUser::where([
