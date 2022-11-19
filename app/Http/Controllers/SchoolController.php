@@ -86,18 +86,6 @@ class SchoolController extends Controller
             $school = School::find($id);
             \Mail::send(new InviteTeacher($school, $request->email));
 
-            $st = SchoolUser::where([
-                'sid' => $id,
-                'uid' => $teacher->id,
-            ])->first();
-
-            if (empty($st)) {
-                $stc = new SchoolUser();
-                $stc->sid = $id;
-                $stc->uid = $teacher->id;
-                $stc->type = 2;//0学生,1管理员,2普通老师
-                $stc->save();
-            }
             $messag = '邀请已发送';
         } else {
             $messag = '该邮箱已被邀请';
