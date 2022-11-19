@@ -14,11 +14,6 @@ use Validator;
 
 class PassportController extends Controller
 {
-    public function index()
-    {
-        return view('login');
-    }
-
     /**
      * login api
      *
