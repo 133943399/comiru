@@ -130,8 +130,6 @@ class PassportController extends Controller
     {
         $auth_user = Auth::user();
         $line_user = Socialite::driver('line')->stateless()->user();
-        $this->setData(['id'=>$line_user->id ?? '2222']);
-        return $this->responseJSON();
 
         if (!empty($auth_user)) {
             if ($auth_user->type != 2) {
@@ -143,6 +141,7 @@ class PassportController extends Controller
             }
             //绑定逻辑
             $user = User::where(['line_id' => $line_user->id, 'type' => 1])->first();
+            $user = User::find($user->id);
             $user->line_id = $line_user->id;
             $user->save();
 
