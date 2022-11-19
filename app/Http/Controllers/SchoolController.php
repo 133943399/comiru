@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Mail\InviteTeacher;
 use App\Models\School;
 use App\Models\SchoolUser;
-use App\Models\SchoolTeacher;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Validator;
@@ -87,9 +86,9 @@ class SchoolController extends Controller
             $school = School::find($id);
             \Mail::send(new InviteTeacher($school, $request->email));
 
-            $st = SchoolTeacher::where([
+            $st = SchoolUser::where([
                 'sid' => $id,
-                'tid' => $teacher->id,
+                'uid' => $teacher->id,
             ])->first();
 
             if (empty($st)) {
