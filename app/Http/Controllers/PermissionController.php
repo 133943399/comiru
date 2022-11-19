@@ -45,7 +45,7 @@ class PermissionController extends Controller
 
         if (!empty($user->line_id)) {
             $count = User::where(['line_id' => $user->line_id])->get()->count();
-            if ($count > 0) {
+            if ($count > 1) {
                 $menu['data'][] = ["title" => "切换用户", "icon" => "", "path" => "/system/change", "component" => "/system/change", "target" => "_self"];
             }
         }
