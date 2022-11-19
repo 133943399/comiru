@@ -75,32 +75,33 @@ class SchoolController extends Controller
             ['type', '<>', 1],
         ])->first();
 
-        $teacher = SchoolUser::where([
-            'sid' => $id,
-            'uid' => $user->id,
-        ])->first();
-
-        if (empty($teacher)) {
-            $school = School::find($id);
-            \Mail::send(new InviteTeacher($school, $request->email));
-
-            $st = SchoolTeacher::where([
+        if (!empty($user)) {
+            $teacher = SchoolUser::where([
                 'sid' => $id,
-                'tid' => $teacher->id,
+                'uid' => $user->id,
             ])->first();
 
-            if (empty($st)) {
-                $stc = new SchoolUser();
-                $stc->sid = $id;
-                $stc->uid = $teacher->id;
-                $stc->type = 2;//0学生,1管理员,2普通老师
-                $stc->save();
-            }
-            $messag = '邀请已发送';
-        } else {
-            $messag = '该邮箱已被邀请';
-        }
+            if (empty($teacher)) {
+                $school = School::find($id);
+                \Mail::send(new InviteTeacher($school, $request->email));
 
+                $st = SchoolTeacher::where([
+                    'sid' => $id,
+                    'tid' => $teacher->id,
+                ])->first();
+
+                if (empty($st)) {
+                    $stc = new SchoolUser();
+                    $stc->sid = $id;
+                    $stc->uid = $teacher->id;
+                    $stc->type = 2;//0学生,1管理员,2普通老师
+                    $stc->save();
+                }
+                $messag = '邀请已发送';
+            } else {
+                $messag = '该邮箱已被邀请';
+            }
+        }
         $this->setMsg(200, $messag);
         return $this->responseJSON();
     }
